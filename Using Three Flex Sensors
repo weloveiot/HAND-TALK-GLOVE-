@@ -1,0 +1,125 @@
+
+// Include Libraries
+#include "Arduino.h"
+#include "Flex.h"
+#include "LED.h"
+
+
+// Pin Definitions
+#define FLEX_5V1_1_PIN_SIG	A3
+#define FLEX_5V2_2_PIN_SIG	A1
+#define FLEX_5V3_3_PIN_SIG	A5
+#define LED_PIN_VIN	5
+
+
+
+// Global variables and defines
+
+// object initialization
+Flex flex_5v1_1(FLEX_5V1_1_PIN_SIG);
+Flex flex_5v2_2(FLEX_5V2_2_PIN_SIG);
+Flex flex_5v3_3(FLEX_5V3_3_PIN_SIG);
+LED led(LED_PIN_VIN);
+
+
+// define vars for testing menu
+const int timeout = 10000;       //define timeout of 10 sec
+char menuOption = 0;
+long time0;
+
+// Setup the essentials for our circuit to work. It runs first every time our circuit is powered with electricity.
+void setup() 
+{
+    // Setup Serial which is useful for debugging
+    // Use the Serial Monitor to view printed messages
+    Serial.begin(9600);
+    while (!Serial) ; // wait for serial port to connect. Needed for native USB
+    Serial.println("start");
+    
+    
+    menuOption = menu();
+    
+}
+
+// Main logic of our circuit. It defines the interaction between the components we selected. After setup, it runs over and over again, in an eternal loop.
+void loop() 
+{
+    
+    
+    if(menuOption == '1') {
+    // Flex Sensor 4.5'' #1 - Test Code
+    // Read Flex sensor value.
+    int flex_5v1_1Val = flex_5v1_1.read();
+    Serial.print(F("flex_5v1_1Val: ")); Serial.println(flex_5v1_1Val);
+
+    }
+    else if(menuOption == '2') {
+    // Flex Sensor 4.5'' #2 - Test Code
+    // Read Flex sensor value.
+    int flex_5v2_2Val = flex_5v2_2.read();
+    Serial.print(F("flex_5v2_2Val: ")); Serial.println(flex_5v2_2Val);
+
+    }
+    else if(menuOption == '3') {
+    // Flex Sensor 4.5'' #3 - Test Code
+    // Read Flex sensor value.
+    int flex_5v3_3Val = flex_5v3_3.read();
+    Serial.print(F("flex_5v3_3Val: ")); Serial.println(flex_5v3_3Val);
+
+    }
+    else if(menuOption == '4') {
+    // Basic Ultraviolet LED 5mm - Test Code
+    // The LED will turn on and fade till it is off
+    for(int i=255 ; i> 0 ; i -= 5)
+    {
+    led.dim(i);                      
+    delay(15);                               
+    }                                          
+    led.off();                       
+    }
+    
+    if (millis() - time0 > timeout)
+    {
+        menuOption = menu();
+    }
+    
+}
+
+
+
+char menu()
+{
+
+    Serial.println(F("\nWhich component would you like to test?"));
+    Serial.println(F("(1) Flex Sensor 4.5'' #1"));
+    Serial.println(F("(2) Flex Sensor 4.5'' #2"));
+    Serial.println(F("(3) Flex Sensor 4.5'' #3"));
+    Serial.println(F("(4) Basic Ultraviolet LED 5mm"));
+    Serial.println(F("(menu) send anything else or press on board reset button\n"));
+    while (!Serial.available());
+
+    // Read data from serial monitor if received
+    while (Serial.available()) 
+    {
+        char c = Serial.read();
+        if (isAlphaNumeric(c)) 
+        {   
+            
+            if(c == '1') 
+    			Serial.println(F("Now Testing Flex Sensor 4.5'' #1"));
+    		else if(c == '2') 
+    			Serial.println(F("Now Testing Flex Sensor 4.5'' #2"));
+    		else if(c == '3') 
+    			Serial.println(F("Now Testing Flex Sensor 4.5'' #3"));
+    		else if(c == '4') 
+    			Serial.println(F("Now Testing Basic Ultraviolet LED 5mm"));
+            else
+            {
+                Serial.println(F("illegal input!"));
+                return 0;
+            }
+            time0 = millis();
+            return c;
+        }
+    }
+}
